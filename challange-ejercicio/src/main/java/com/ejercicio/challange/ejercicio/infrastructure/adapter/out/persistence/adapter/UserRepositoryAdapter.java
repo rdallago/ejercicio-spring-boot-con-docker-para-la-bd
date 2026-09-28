@@ -15,43 +15,47 @@ import java.util.stream.Collectors;
 public class UserRepositoryAdapter implements UserRepositoryPort {
 
     private final SpringDataUserRepository springDataUserRepository;
-    private final UserPersistenceMapper mapper;
+    private final UserPersistenceMapper userPersistenceMapper;
 
-    public UserRepositoryAdapter(SpringDataUserRepository springDataUserRepository, UserPersistenceMapper mapper) {
+   public UserRepositoryAdapter(SpringDataUserRepository springDataUserRepository,
+                                UserPersistenceMapper userPersistenceMapper) {
         this.springDataUserRepository = springDataUserRepository;
-        this.mapper = mapper;
+        this.userPersistenceMapper = userPersistenceMapper;
     }
 
-    @Override
+ @Override
     public User save(User user) {
-        UserEntity entity = mapper.toEntity(user);
+        UserEntity entity = userPersistenceMapper.toEntity(user);
         UserEntity savedEntity = springDataUserRepository.save(entity);
-        return mapper.toDomain(savedEntity);
+        return userPersistenceMapper.toDomain(savedEntity);
     }
+
 
     @Override
     public List<User> findAll() {
         return springDataUserRepository.findAll()
                 .stream()
-                .map(mapper::toDomain)
+                .map(userPersistenceMapper::toDomain) // <-- Cambiado mapper::toDomain por userPersistenceMapper::toDomain
                 .collect(Collectors.toList());
     }
 
     @Override
     public Optional<User> findById(Long id) {
         return springDataUserRepository.findById(id)
-                .map(mapper::toDomain);
+                .map(userPersistenceMapper::toDomain); // <-- Cambiado mapper::toDomain por userPersistenceMapper::toDomain
     }
 
-    @Override
+   @Override
     public User update(Long id, User user) {
-        return springDataUserRepository.findById(id).map(existingEntity -> {
-            existingEntity.setNombre(user.getNombre());
-            existingEntity.setEdad(user.getEdad());
-            existingEntity.setCorreo(user.getCorreo());
-            UserEntity updatedEntity = springDataUserRepository.save(existingEntity);
-            return mapper.toDomain(updatedEntity);
-        }).orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
+        return springDataUserRepository.findById(id).map(entity -> {
+            entity.setNombre(user.getNombre());
+            entity.setEdad(user.getEdad());
+            entity.setCorreo(user.getCorreo());
+            entity.setPokemonIds(user.getPokemonIds());
+            
+            UserEntity updatedEntity = springDataUserRepository.save(entity);
+            return userPersistenceMapper.toDomain(updatedEntity);
+        }).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
 
     @Override

@@ -1,6 +1,9 @@
 package com.ejercicio.challange.ejercicio.infrastructure.adapter.out.persistence.entity;
 
 import jakarta.persistence.*;
+import com.ejercicio.challange.ejercicio.infrastructure.adapter.out.persistence.converter.IntegerListConverter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "usuario")
@@ -19,15 +22,29 @@ public class UserEntity {
     // Vinculamos la propiedad 'correo' de Java con la columna física 'email' de PostgreSQL
     @Column(name = "email", nullable = false, unique = true)
     private String correo;
+    
+    // Se guarda en la misma tabla como un texto '1,5,7' ejemplos de pokemonIds
+    @Convert(converter = IntegerListConverter.class)
+    @Column(name = "pokemon_ids")
+    private List<Integer> pokemonIds = new ArrayList<>();
 
     public UserEntity() {
     }
-
+    // Constructor de 4 parámetros
     public UserEntity(Long id, String nombre, Integer edad, String correo) {
         this.id = id;
         this.nombre = nombre;
         this.edad = edad;
         this.correo = correo;
+        
+    }
+    // Constructor de 5 parámetros
+    public UserEntity(Long id, String nombre, Integer edad, String correo,List<Integer> pokemonIds) {
+        this.id = id;
+        this.nombre = nombre;
+        this.edad = edad;
+        this.correo = correo;
+        this.pokemonIds = pokemonIds;
     }
 
     public Long getId() {
@@ -61,4 +78,7 @@ public class UserEntity {
     public void setCorreo(String correo) {
         this.correo = correo;
     }
+    public List<Integer> getPokemonIds() { return pokemonIds; }
+    
+    public void setPokemonIds(List<Integer> pokemonIds) { this.pokemonIds = pokemonIds; }
 }

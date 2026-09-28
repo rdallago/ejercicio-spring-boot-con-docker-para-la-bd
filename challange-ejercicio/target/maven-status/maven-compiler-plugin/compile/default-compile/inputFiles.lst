@@ -1,11 +1,14 @@
 D:\Downloads\proyectos\ejercicio spring boot con docker para la bd\challange-ejercicio\src\main\java\com\ejercicio\challange\ejercicio\application\service\UserService.java
 D:\Downloads\proyectos\ejercicio spring boot con docker para la bd\challange-ejercicio\src\main\java\com\ejercicio\challange\ejercicio\ChallangeEjercicio.java
 D:\Downloads\proyectos\ejercicio spring boot con docker para la bd\challange-ejercicio\src\main\java\com\ejercicio\challange\ejercicio\domain\model\User.java
+D:\Downloads\proyectos\ejercicio spring boot con docker para la bd\challange-ejercicio\src\main\java\com\ejercicio\challange\ejercicio\domain\port\out\PokemonApiClientPort.java
 D:\Downloads\proyectos\ejercicio spring boot con docker para la bd\challange-ejercicio\src\main\java\com\ejercicio\challange\ejercicio\domain\repository\UserRepositoryPort.java
 D:\Downloads\proyectos\ejercicio spring boot con docker para la bd\challange-ejercicio\src\main\java\com\ejercicio\challange\ejercicio\infrastructure\adapter\in\rest\dto\UserDto.java
 D:\Downloads\proyectos\ejercicio spring boot con docker para la bd\challange-ejercicio\src\main\java\com\ejercicio\challange\ejercicio\infrastructure\adapter\in\rest\mapper\UserRestMapper.java
 D:\Downloads\proyectos\ejercicio spring boot con docker para la bd\challange-ejercicio\src\main\java\com\ejercicio\challange\ejercicio\infrastructure\adapter\in\rest\UserController.java
 D:\Downloads\proyectos\ejercicio spring boot con docker para la bd\challange-ejercicio\src\main\java\com\ejercicio\challange\ejercicio\infrastructure\adapter\out\persistence\adapter\UserRepositoryAdapter.java
+D:\Downloads\proyectos\ejercicio spring boot con docker para la bd\challange-ejercicio\src\main\java\com\ejercicio\challange\ejercicio\infrastructure\adapter\out\persistence\converter\IntegerListConverter.java
 D:\Downloads\proyectos\ejercicio spring boot con docker para la bd\challange-ejercicio\src\main\java\com\ejercicio\challange\ejercicio\infrastructure\adapter\out\persistence\entity\UserEntity.java
 D:\Downloads\proyectos\ejercicio spring boot con docker para la bd\challange-ejercicio\src\main\java\com\ejercicio\challange\ejercicio\infrastructure\adapter\out\persistence\mapper\UserPersistenceMapper.java
 D:\Downloads\proyectos\ejercicio spring boot con docker para la bd\challange-ejercicio\src\main\java\com\ejercicio\challange\ejercicio\infrastructure\adapter\out\persistence\repository\SpringDataUserRepository.java
+D:\Downloads\proyectos\ejercicio spring boot con docker para la bd\challange-ejercicio\src\main\java\com\ejercicio\challange\ejercicio\infrastructure\adapter\out\rest\PokeApiClientAdapter.java
