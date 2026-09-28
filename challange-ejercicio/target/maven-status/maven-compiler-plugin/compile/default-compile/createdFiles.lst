@@ -1,0 +1,11 @@
+com\ejercicio\challange\ejercicio\infrastructure\adapter\out\persistence\mapper\UserPersistenceMapper.class
+com\ejercicio\challange\ejercicio\infrastructure\adapter\out\persistence\entity\UserEntity.class
+com\ejercicio\challange\ejercicio\domain\repository\UserRepositoryPort.class
+com\ejercicio\challange\ejercicio\infrastructure\adapter\in\rest\UserController.class
+com\ejercicio\challange\ejercicio\domain\model\User.class
+com\ejercicio\challange\ejercicio\infrastructure\adapter\out\persistence\repository\SpringDataUserRepository.class
+com\ejercicio\challange\ejercicio\infrastructure\adapter\in\rest\dto\UserDto.class
+com\ejercicio\challange\ejercicio\infrastructure\adapter\out\persistence\adapter\UserRepositoryAdapter.class
+com\ejercicio\challange\ejercicio\ChallangeEjercicio.class
+com\ejercicio\challange\ejercicio\infrastructure\adapter\in\rest\mapper\UserRestMapper.class
+com\ejercicio\challange\ejercicio\application\service\UserService.class
