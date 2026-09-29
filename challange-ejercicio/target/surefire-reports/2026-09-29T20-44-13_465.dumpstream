@@ -1,0 +1,5 @@
+# Created at 2026-09-29T20:44:13.733
+Boot Manifest-JAR contains absolute paths in classpath 'D:\Downloads\proyectos\ejercicio spring boot con docker para la bd\challange-ejercicio\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+

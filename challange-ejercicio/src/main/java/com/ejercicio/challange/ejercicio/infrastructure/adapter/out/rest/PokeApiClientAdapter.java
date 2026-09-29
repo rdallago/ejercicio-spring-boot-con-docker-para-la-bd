@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 
 @Component
 public class PokeApiClientAdapter implements PokemonApiClientPort {
-
+    
     private final RestClient restClient;
     // Pool de hilos para llamadas concurrentes
     private final ExecutorService executor = Executors.newCachedThreadPool(); 
