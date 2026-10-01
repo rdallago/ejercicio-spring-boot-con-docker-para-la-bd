@@ -23,6 +23,7 @@ public class UserEntity {
     @Column(name = "email", nullable = false, unique = true)
     private String correo;
     
+      
     // Se guarda en la misma tabla como un texto '1,5,7' ejemplos de pokemonIds
     @Convert(converter = IntegerListConverter.class)
     @Column(name = "pokemon_ids")
