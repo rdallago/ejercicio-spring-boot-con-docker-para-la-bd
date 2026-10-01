@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # 1. Servicio de Base de Datos PostgreSQL
   postgres-db:
     image: postgres:16-alpine
     container_name: challange
@@ -11,8 +12,32 @@ services:
       POSTGRES_PASSWORD: root
     ports:
       - "5432:5432"
-    volumes:
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d challange_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes: 
       - postgres_data:/var/lib/postgresql/data
+
+  # 2. Servicio del Backend (Spring Boot)
+  backend-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: challange-backend
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/challange_db
+      #para entregar va esta versión: jdbc:postgresql://postgres-db:5432/challange_db reemplazar por la de arriba
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      postgres-db:
+        condition: service_healthy
 
 volumes:
   postgres_data:
