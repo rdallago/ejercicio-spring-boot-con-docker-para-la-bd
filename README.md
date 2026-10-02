@@ -41,6 +41,10 @@ The system manages user data and integrates with the public [PokéAPI](https://p
 
 ---
 
+### Badges
+
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/rdallago/ejercicio-spring-boot-con-docker-para-la-bd/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/rdallago/ejercicio-spring-boot-con-docker-para-la-bd/tree/main)
+
 ## Features
 
 - **User Registration:** Registers new users while ensuring email uniqueness and associating a list of Pokémon IDs.
