@@ -1,6 +1,5 @@
 version: 2.1
 
-
 orbs:
   coveralls: coveralls/coveralls@2.2.5
   
@@ -14,19 +13,19 @@ jobs:
   build-and-test:
     executor: java-executor
     steps:
-      - checkout
+      - checkout:
+          path: ~/project
 
       # Restaura dependencias almacenadas en caché para acelerar el build
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "challange-ejercicio/pom.xml" }}
+            - v1-dependencies-{{ checksum "pom.xml" }}
             - v1-dependencies-
 
       # Otorga permisos de ejecución al Maven Wrapper y descarga dependencias
       - run:
           name: Preparar entorno y dependencias
           command: |
-            cd challange-ejercicio
             chmod +x mvnw
             ./mvnw dependency:go-offline
 
@@ -34,18 +33,21 @@ jobs:
       - save_cache:
           paths:
             - ~/.m2
-          key: v1-dependencies-{{ checksum "challange-ejercicio/pom.xml" }}
+          key: v1-dependencies-{{ checksum "pom.xml" }}
 
-      # Ejecuta las pruebas unitarias e integración de JUnit
+      # Ejecuta las pruebas y genera el informe de cobertura de JaCoCo
       - run:
-          name: Ejecutar Pruebas Automatizadas
+          name: Ejecutar Pruebas Automatizadas y Reporte JaCoCo
           command: |
-            cd challange-ejercicio
-            ./mvnw clean test
+            ./mvnw clean test jacoco:report
 
       # Almacena los resultados de los tests para verlos en la interfaz de CircleCI
       - store_test_results:
-          path: challange-ejercicio/target/surefire-reports
+          path: target/surefire-reports
+
+      # Reporte de cobertura para Coveralls usando el Orb
+      - coveralls/upload:
+          path_to_lcov: target/site/jacoco/jacoco.xml
 
 workflows:
   pipeline-integracion-continua:
