@@ -13,7 +13,7 @@ jobs:
       - checkout:
           path: ~/project
 
-      # Restaura dependencias almacenadas en caché para acelerar el build
+      # Restaura dependencias almacenadas en caché
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
@@ -32,13 +32,13 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
-      # Ejecuta las pruebas, genera el reporte JaCoCo y sube directamente a Coveralls vía Maven
+      # Ejecuta tests, genera el reporte JaCoCo y lo sube a Coveralls vía Maven
       - run:
           name: Ejecutar Pruebas Automatizadas y Subir a Coveralls
           command: |
-            ./mvnw clean test jacoco:report org.eluder.coveralls:coveralls-maven-plugin:4.3.0:report -DrepoToken=$COVERALLS_REPO_TOKEN
+            ./mvnw clean test jacoco:report coveralls:report -DrepoToken=$COVERALLS_REPO_TOKEN
 
-      # Almacena los resultados de los tests para verlos en la interfaz de CircleCI
+      # Almacena los resultados de los tests
       - store_test_results:
           path: target/surefire-reports
 
