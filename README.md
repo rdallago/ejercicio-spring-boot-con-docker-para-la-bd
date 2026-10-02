@@ -1,8 +1,8 @@
 # Backend Challenge Course
 
-A RESTful API developed with Java and Spring Boot following Clean Architecture principles.
+A RESTful API developed with Java and Spring Boot following Clean Architecture principles and secured with HTTPS.
 
-The system manages user data and integrates with the public [PokéAPI](https://pokeapi.co/) to enrich user profiles with Pokémon details.
+The application manages user data and integrates with the public [PokéAPI](https://pokeapi.co/) to enrich user profiles with Pokémon information.
 
 ---
 
@@ -14,12 +14,11 @@ The system manages user data and integrates with the public [PokéAPI](https://p
 4. [System Entities](#system-entities)
 5. [Request Body Structure](#request-body-structure)
 6. [Application Routes (Endpoints)](#application-routes-endpoints)
-7. [Standards and Design Patterns](#standards-and-design-patterns)
-8. [How to Run the Application](#how-to-run-the-application)
-9. [Data Seeding (Empty Database)](#data-seeding-empty-database)
-10. [How to Run Tests](#how-to-run-tests)
-11. [Deployment Considerations](#deployment-considerations)
-12. [Decisions Made](#decisions-made)
+7. [How to Run the Application](#how-to-run-the-application)
+8. [Data Seeding (Empty Database)](#data-seeding-empty-database)
+9. [How to Run Tests](#how-to-run-tests)
+10. [Deployment Considerations](#deployment-considerations)
+11. [Decisions Made](#decisions-made)
 
 ---
 
@@ -30,13 +29,15 @@ The system manages user data and integrates with the public [PokéAPI](https://p
   - Spring Web / Spring MVC
   - Spring Data JPA
   - Bean Validation
+  - Spring Security
+- **HTTPS / TLS** for secure API communication
 - **PostgreSQL**
 - **Hibernate**
 - **Docker and Docker Compose**
+- **Maven**
 - **JUnit 5**
 - **Mockito**
 - **MockMvc**
-- **Maven**
 - **SpringDoc OpenAPI / Swagger**
 - **PokéAPI**
 
@@ -44,40 +45,43 @@ The system manages user data and integrates with the public [PokéAPI](https://p
 
 ## Features
 
-- **User Registration:** Registers new users while ensuring email uniqueness and associating a list of Pokémon IDs.
-- **Enriched User Retrieval:** Fetches user records from the local database and dynamically integrates full Pokémon details through the PokéAPI.
-- **Email Validation:** Validates the user email and prevents duplicate registrations.
-- **Pokémon Integration:** Retrieves additional Pokémon information from the public PokéAPI.
-- **Environment Database Isolation:** Maintains distinct databases for development or production and integration testing:
+- **User registration:** Creates users while validating email uniqueness.
+- **User CRUD:** Creates, retrieves, updates and deletes users.
+- **Pokémon association:** Associates a list of Pokémon IDs with each user.
+- **Enriched user retrieval:** Retrieves users from the local database and enriches their Pokémon information through PokéAPI.
+- **HTTPS security:** Exposes the application API through secure HTTPS communication.
+- **Database isolation:** Uses separate databases for the application and integration tests:
   - `challenge_db`
   - `challenge_db_test`
-- **Clean Architecture:** Organizes the application into independent layers with clearly defined responsibilities.
-- **RESTful API:** Exposes HTTPS endpoints to create and retrieve users.
-- **Integration Test Suite:** Includes controller tests with database cleanup and external REST-call isolation using mocks.
-- **Swagger Documentation:** Provides interactive API documentation through SpringDoc OpenAPI.
-- **Docker Support:** Allows the application and database to run in containerized environments.
+- **Clean Architecture:** Separates business logic, persistence, external integrations and presentation concerns.
+- **REST API:** Provides secure endpoints for user management.
+- **Integration testing:** Includes controller integration tests connected to the test database.
+- **Swagger documentation:** Provides interactive API documentation through SpringDoc OpenAPI.
+- **Docker support:** Allows the application and PostgreSQL database to run in containers.
 
 ---
 
 ## Prerequisites
 
-Before running the application and tests, ensure you have the following installed:
+Before running the application, make sure the following requirements are met:
 
 - **JDK 17** or higher.
-- **Apache Maven 3.8+**.
-  - Maven is optional if you use the Maven Wrapper included in the project.
 - **Docker Desktop** with Linux container support.
 - **Docker Compose**.
-- A database GUI client such as:
-  - [DBeaver](https://dbeaver.io/)
-  - [pgAdmin](https://www.pgadmin.org/)
-  - Another PostgreSQL-compatible client.
+- A valid HTTPS/TLS configuration for the application.
+- Internet access for retrieving Pokémon information from PokéAPI.
 - Available ports:
-  - `8080` for the Spring Boot application.
+  - `8080` for the HTTPS Spring Boot application, unless another secure port is configured.
   - `5432` for PostgreSQL.
-- Internet access if the application needs to retrieve Pokémon details from the public PokéAPI.
 
-> Docker Compose should be available without requiring `sudo` for the current user.
+Maven is optional because the project includes the Maven Wrapper.
+
+Optional database clients:
+
+- [DBeaver](https://dbeaver.io/)
+- [pgAdmin](https://www.pgadmin.org/)
+
+> If the application uses a self-signed certificate in development, the browser or API client may display a certificate warning. This is expected unless the certificate is trusted locally.
 
 ---
 
@@ -87,19 +91,19 @@ Before running the application and tests, ensure you have the following installe
 
 | Column | Data Type | Constraints | Description |
 | :--- | :--- | :--- | :--- |
-| `id` | `BIGINT` | `PRIMARY KEY`, auto-generated | Unique identifier for the user |
-| `nombre` | `VARCHAR(255)` | `NOT NULL` | User's full name |
-| `edad` | `INTEGER` | `NOT NULL` | User's age |
-| `email` | `VARCHAR(255)` | `NOT NULL`, `UNIQUE` | User's email address |
-| `pokemon_ids` | `VARCHAR(255)` | Nullable | Serialized list of assigned Pokémon IDs |
+| `id` | `BIGINT` | Primary key, auto-generated | Unique user identifier |
+| `nombre` | `VARCHAR(255)` | Not null | User's full name |
+| `edad` | `INTEGER` | Not null | User's age |
+| `email` | `VARCHAR(255)` | Not null, unique | User's email address |
+| `pokemon_ids` | `VARCHAR(255)` | Nullable | Serialized list of Pokémon IDs |
 
-> The exact table and column names depend on the JPA entity and database configuration used by the application.
+> The final table and column names depend on the JPA entity mappings and database configuration.
 
 ---
 
 ## Request Body Structure
 
-When issuing `POST` requests to `/api/usuarios`, requests must be sent as JSON with the following header:
+The `POST` and `PUT` endpoints expect a JSON request with the following header:
 
 ```http
 Content-Type: application/json
@@ -112,7 +116,7 @@ Content-Type: application/json
   "nombre": "Ricardo",
   "edad": 30,
   "email": "rdl@mail.com",
-  "pokemonIds":[40][45]
+  "pokemonIds": [40, 45]
 }
 ```
 
@@ -123,94 +127,97 @@ Content-Type: application/json
 | `nombre` | `String` | Yes | User's full name |
 | `edad` | `Integer` | Yes | User's age |
 | `email` | `String` | Yes | User's email address |
-| `pokemonIds` | `Array<Integer>` | No | List of Pokémon IDs associated with the user |
-
-> The request uses the field `email`. If the implementation currently expects `correo`, update either the DTO or this documentation so both remain consistent.
-
-### Example using cURL
-
-```bash
-curl -X POST "https://localhost:8080/api/usuarios" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "nombre": "Ricardo",
-    "edad": 30,
-    "email": "rdl@mail.com",
-    "pokemonIds":[40][45]
-  }'
-```
+| `pokemonIds` | `Array<Integer>` | No | List of associated Pokémon IDs |
 
 ---
 
 ## Application Routes (Endpoints)
 
-The following endpoints are available in the application.
+The API provides the following CRUD operations over HTTPS:
+
+| HTTP Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/api/usuarios` | Creates a new user |
+| `GET` | `/api/usuarios` | Retrieves all users |
+| `GET` | `/api/usuarios/{id}` | Retrieves a user by ID |
+| `PUT` | `/api/usuarios/{id}` | Updates an existing user |
+| `DELETE` | `/api/usuarios/{id}` | Deletes a user by ID |
 
 ### Create a user
 
-```https
-POST /api/usuarios
+```http
+POST https://localhost:8080/api/usuarios
 ```
 
 Creates a new user.
 
-#### Example request
-
-```json
-{
-  "nombre": "Ricardo",
-  "edad": 30,
-  "email": "rdl@mail.com",
-  "pokemonIds":[40][45]
-}
-```
-
-#### Example cURL request
-
 ```bash
-curl -X POST "https://localhost:8080/api/usuarios" \
+curl -k -X POST "https://localhost:8080/api/usuarios" \
   -H "Content-Type: application/json" \
   -d '{
     "nombre": "Ricardo",
     "edad": 30,
     "email": "rdl@mail.com",
-    "pokemonIds":[40][45]
+    "pokemonIds": [40, 45]
   }'
 ```
 
----
+> The `-k` option allows testing with a self-signed local certificate. Do not use it in production unless the certificate validation policy explicitly allows it.
 
 ### Retrieve all users
 
-```https
-GET /api/usuarios
+```http
+GET https://localhost:8080/api/usuarios
 ```
 
 Returns all users stored in the database.
 
-#### Example cURL request
-
 ```bash
-curl "https://localhost:8080/api/usuarios"
+curl -k "https://localhost:8080/api/usuarios"
 ```
-
----
 
 ### Retrieve a user by ID
 
 ```http
-GET /api/usuarios/{id}
+GET https://localhost:8080/api/usuarios/{id}
 ```
 
 Returns a specific user by ID, including enriched Pokémon information when available.
 
-#### Example cURL request
-
 ```bash
-curl "https://localhost:8080/api/usuarios/1"
+curl -k "https://localhost:8080/api/usuarios/1"
 ```
 
----
+### Update a user
+
+```http
+PUT https://localhost:8080/api/usuarios/{id}
+```
+
+Updates an existing user identified by `{id}`.
+
+```bash
+curl -k -X PUT "https://localhost:8080/api/usuarios/1" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nombre": "Ricardo Actualizado",
+    "edad": 31,
+    "email": "ricardo.actualizado@mail.com",
+    "pokemonIds": [40, 45, 150]
+  }'
+```
+
+### Delete a user
+
+```http
+DELETE https://localhost:8080/api/usuarios/{id}
+```
+
+Deletes an existing user identified by `{id}`.
+
+```bash
+curl -k -X DELETE "https://localhost:8080/api/usuarios/1"
+```
 
 ### Interactive API documentation
 
@@ -218,62 +225,35 @@ When the application is running locally, Swagger UI is available at:
 
 [Open Swagger UI](https://localhost:8080/swagger-ui/index.html)
 
-OpenAPI specification:
+The OpenAPI specification is available at:
 
 [OpenAPI JSON](https://localhost:8080/v3/api-docs)
-
-> These links work when the application is running on `localhost` and port `8080`.
 
 ---
 
 ## Standards and Design Patterns
 
-The application follows the following architectural and development standards:
-
 ### Clean Architecture
 
 The project is organized into layers with clearly defined responsibilities:
 
-- **Domain:** Core business entities and rules.
+- **Domain:** Business entities and rules.
 - **Application:** Use cases and business orchestration.
-- **Infrastructure:** Database access, external API clients and technical implementations.
+- **Infrastructure:** Database access and external API clients.
 - **Presentation:** REST controllers and HTTP-related concerns.
 
-The objective is to keep business logic independent from frameworks, databases and external services.
+This structure keeps business logic independent from frameworks, databases and external services.
 
 ### REST principles
 
-The API follows REST-oriented conventions:
+The API follows REST conventions:
 
-- Uses HTTP verbs according to the operation.
-- Uses resource-oriented URLs.
-- Exchanges data using JSON.
-- Uses appropriate HTTP status codes.
-- Keeps requests stateless.
-
-### DTO pattern
-
-Data Transfer Objects are used to isolate the external API contract from the internal persistence entities.
-
-### Repository pattern
-
-Repositories abstract database access and isolate persistence logic from the rest of the application.
-
-### Service layer
-
-The service layer contains application and business logic, keeping controllers focused on handling HTTP requests and responses.
-
-### Dependency Injection
-
-Spring Dependency Injection is used to provide services, repositories and external clients to the classes that require them.
-
-### External API isolation
-
-PokéAPI integration is isolated behind a dedicated client or service. This prevents external communication details from leaking into the business logic.
-
-### Validation
-
-Request data should be validated before reaching the business layer. Invalid input should produce an appropriate client error response.
+- HTTP verbs are used according to the operation.
+- URLs represent application resources.
+- JSON is used for request and response bodies.
+- Appropriate HTTP status codes are returned.
+- Requests are stateless.
+- API communication is secured through HTTPS.
 
 ---
 
@@ -288,35 +268,32 @@ git clone <YOUR_REPOSITORY_URL>
 cd challenge-ejercicio
 ```
 
-> Make sure the directory name matches the actual repository directory.
+### 2. Configure HTTPS
 
-### 2. Build the application
+Configure the certificate and HTTPS properties required by the application before starting it.
 
-Using Maven:
+For example, Spring Boot commonly uses properties similar to:
 
-```bash
-mvn clean package
+```properties
+server.port=8080
+server.ssl.enabled=true
+server.ssl.key-store=classpath:keystore.p12
+server.ssl.key-store-password=YOUR_KEYSTORE_PASSWORD
+server.ssl.key-store-type=PKCS12
+server.ssl.key-alias=YOUR_KEY_ALIAS
 ```
 
-Or, using the Maven Wrapper:
+> Use environment variables or a secure secret-management solution for real passwords. Do not commit private keys, certificates or passwords to the repository.
 
-```bash
-./mvnw clean package
-```
+### 3. Start the application and database
 
-On Windows:
-
-```bash
-mvnw.cmd clean package
-```
-
-### 3. Start the database and application with Docker Compose
+Using Docker Compose:
 
 ```bash
 docker compose up --build -d
 ```
 
-If the project uses the legacy Docker Compose command, use:
+If the project uses the legacy command:
 
 ```bash
 docker-compose up --build -d
@@ -328,36 +305,26 @@ docker-compose up --build -d
 docker compose ps
 ```
 
-Or:
+### 5. View the application logs
 
-```bash
-docker-compose ps
-```
-
-### 5. View the backend logs
-
-Replace `challenge-backend` with the actual container name if it differs:
+Replace `challenge-backend` with the actual container name if necessary:
 
 ```bash
 docker logs -f challenge-backend
 ```
 
-You can also list the running containers with:
+To list the running containers:
 
 ```bash
 docker ps
 ```
 
-### 6. Test the application
+### 6. Access the API
 
-Once the application is running, open:
-
-[Swagger UI](https://localhost:8080/swagger-ui/index.html)
-
-Or test the API directly:
+Open [Swagger UI](https://localhost:8080/swagger-ui/index.html) or test the API directly:
 
 ```bash
-curl "https://localhost:8080/api/usuarios"
+curl -k "https://localhost:8080/api/usuarios"
 ```
 
 ### 7. Stop the services
@@ -366,228 +333,187 @@ curl "https://localhost:8080/api/usuarios"
 docker compose down
 ```
 
-Or:
-
-```bash
-docker-compose down
-```
-
 To stop the services and remove their volumes:
 
 ```bash
 docker compose down -v
 ```
 
-> Use `-v` carefully because it removes the database volume and may delete persisted local data.
+> The `-v` option removes Docker volumes and may delete persisted local database data.
 
 ---
 
 ## Data Seeding (Empty Database)
 
-If the database starts empty, users can be created by sending a `POST` request to:
-
-```https
-POST /api/usuarios
-```
+If the database is empty, create a user by sending a secure `POST` request to `/api/usuarios`.
 
 ### Example seed request
 
 ```bash
-curl -X POST "https://localhost:8080/api/usuarios" \
+curl -k -X POST "https://localhost:8080/api/usuarios" \
   -H "Content-Type: application/json" \
   -d '{
     "nombre": "Ricardo",
     "edad": 30,
     "email": "rdl@mail.com",
-    "pokemonIds":[40][45]
+    "pokemonIds": [40, 45]
   }'
 ```
 
 ### Seeding through Swagger
 
-1. Start the application.
+1. Start the application with HTTPS enabled.
 2. Open [Swagger UI](https://localhost:8080/swagger-ui/index.html).
-3. Locate `POST /api/usuarios`.
-4. Select **Try it out**.
+3. Select `POST /api/usuarios`.
+4. Click **Try it out**.
 5. Enter the JSON request body.
-6. Select **Execute**.
+6. Click **Execute**.
 
 ### Database configuration
 
-The development or production database is identified as:
+The application database is:
 
 ```text
 challenge_db
 ```
 
-The integration-test database is identified as:
+The integration-test database is:
 
 ```text
 challenge_db_test
 ```
 
-The actual database names, usernames, passwords and ports should be configured through environment variables or the project configuration files.
+Database URLs, users, passwords and ports should be configured through environment variables or application configuration files.
 
-Do not commit real passwords or secrets to the repository.
+Do not commit real credentials, private keys or certificates to the repository.
 
 ---
 
 ## How to Run Tests
 
-### Run all tests with Maven
+Integration tests are executed directly from the command line using the Maven Wrapper.
 
-```bash
-mvn test
+From the project root directory, run:
+
+```powershell
+.\mvnw test -Dtest=UserControllerIntegrationTest
 ```
 
-Or with the Maven Wrapper:
+This command executes all test cases defined in the `UserControllerIntegrationTest` class.
 
-```bash
-./mvnw test
+### Test environment
+
+The integration tests use the isolated test database:
+
+```text
+challenge_db_test
 ```
 
-On Windows:
+Before running the tests, verify that:
 
-```bash
-mvnw.cmd test
+- PostgreSQL is running.
+- The test database is available.
+- The test configuration points to `challenge_db_test`.
+- The command is executed from the project root directory.
+
+### Tested functionality
+
+The integration test class verifies the user-related REST API, including:
+
+- Creating users with `POST`.
+- Retrieving all users with `GET`.
+- Retrieving a user by ID with `GET`.
+- Updating users with `PUT`.
+- Deleting users with `DELETE`.
+- Validating HTTP status codes and response content.
+- Verifying persistence operations.
+- Testing the integration between the controller, service and repository layers.
+
+All test cases executed successfully.
+
+### Run all tests
+
+To execute every test class in the project, run:
+
+```powershell
+.\mvnw test
 ```
 
-### Run a clean test build
+Maven generates detailed test reports in:
 
-```bash
-mvn clean verify
-```
-
-Or:
-
-```bash
-./mvnw clean verify
+```text
+target/surefire-reports
 ```
 
 ### Testing technologies
 
 The project uses:
 
-- **JUnit 5** for test organization and assertions.
-- **Mockito** for mocking dependencies.
-- **MockMvc** for testing HTTP endpoints.
-- **Spring Boot Test** for application-context and integration tests.
-- **Test database isolation** to prevent test data from affecting development data.
-- **Mocked external API calls** to avoid depending on PokéAPI during automated tests.
-
-### Test database
-
-Integration tests should use:
-
-```text
-challenge_db_test
-```
-
-The test environment must be isolated from the development or production database.
-
-### Example test command with a profile
-
-If the project defines a test profile, it can be executed with:
-
-```bash
-mvn test -Dspring.profiles.active=test
-```
-
-> The exact command depends on the profiles configured in the project.
+- **JUnit 5** for test cases and assertions.
+- **Spring Boot Test** for loading the application context.
+- **MockMvc** for testing REST controllers.
+- **Mockito** for mocking dependencies when necessary.
+- **Maven Surefire** for test execution and report generation.
+- **PostgreSQL** through the isolated test database.
 
 ---
 
 ## Deployment Considerations
 
-Before deploying the application to another environment, consider the following:
+Before deploying the application, consider the following aspects:
+
+### HTTPS and certificates
+
+- Use a certificate issued by a trusted Certificate Authority in production.
+- Do not use `curl -k` in production because it disables certificate validation.
+- Protect private keys and keystore passwords.
+- Configure secure TLS protocols and cipher suites.
+- Redirect insecure traffic to HTTPS when an HTTP entry point exists.
+- Renew certificates before they expire.
 
 ### Environment variables
 
 Configure environment-specific values outside the source code:
 
 - Database URL.
-- Database username.
-- Database password.
+- Database username and password.
 - Active Spring profile.
+- HTTPS port.
+- Keystore location.
+- Keystore password.
 - External API configuration.
-- Server port.
 - Logging level.
 
 ### Database migrations
 
-For production environments, prefer a migration tool such as:
-
-- Flyway.
-- Liquibase.
-
-Avoid depending exclusively on automatic schema generation for production databases.
+For production environments, use a migration tool such as Flyway or Liquibase instead of relying exclusively on automatic schema generation.
 
 ### Database persistence
 
-Ensure that PostgreSQL uses a persistent volume in Docker or an external managed database.
+Use a persistent Docker volume or a managed PostgreSQL database to prevent data loss.
 
 ### Secrets
 
-Do not commit any of the following to the repository:
+Never commit database passwords, API keys, access tokens, private keys, certificates or production connection strings to the repository.
 
-- Database passwords.
-- API keys.
-- Access tokens.
-- Private credentials.
-- Production connection strings.
+Use environment variables or a dedicated secret-management service.
 
-Use environment variables or a secret-management service instead.
+### PokéAPI availability
 
-### External API availability
+Because the application depends on PokéAPI, consider connection timeouts, error handling, retry policies, rate limits, caching and fallback behavior.
 
-The application depends on PokéAPI for Pokémon enrichment. Consider:
+### Monitoring and security
 
-- Connection timeouts.
-- Error handling.
-- Retry policies.
-- Rate limits.
-- Caching.
-- A fallback response when PokéAPI is unavailable.
+For production deployments:
 
-### Health checks
-
-Configure health checks for:
-
-- The Spring Boot application.
-- The PostgreSQL database.
-- External dependencies when appropriate.
-
-### Logging and monitoring
-
-In production, configure:
-
-- Structured logs.
-- Centralized log collection.
-- Error tracking.
-- Metrics.
-- Application health monitoring.
-
-### Container configuration
-
-Use production-appropriate Docker images and configurations.
-
-The application container should not contain development credentials or unnecessary tools.
-
-### HTTPS and reverse proxy
-
-In a public deployment, expose the API through HTTPS and consider using a reverse proxy such as:
-
-- NGINX.
-- Traefik.
-- A cloud load balancer.
-
-### Resource limits
-
-Define CPU and memory limits for the application and database containers.
-
-### CORS and security
-
-Configure CORS according to the actual frontend domains. Do not allow unrestricted origins in production unless there is a specific reason.
+- Configure application and database health checks.
+- Use structured logging and error monitoring.
+- Define CPU and memory limits.
+- Configure CORS for trusted frontend domains only.
+- Enforce authentication and authorization when required.
+- Apply secure HTTP headers.
+- Expose the application through HTTPS.
+- Consider using a reverse proxy such as NGINX or Traefik.
 
 ---
 
@@ -595,84 +521,46 @@ Configure CORS according to the actual frontend domains. Do not allow unrestrict
 
 ### Clean Architecture
 
-Clean Architecture was selected to make the system easier to maintain and extend.
-
-The architecture separates business rules from frameworks, databases and external services. This facilitates future modifications and makes the application easier to test.
+Clean Architecture was selected to improve maintainability, testability and future extensibility by separating business rules from frameworks, databases and external services.
 
 ### JPA, Hibernate and Spring Data JPA
 
-The application uses Hibernate as the ORM implementation through the JPA specification and Spring Data JPA.
+Hibernate is used as the JPA implementation through Spring Data JPA because it provides:
 
-#### Why use JPA, Hibernate and Spring Data JPA?
+- **Abstraction and productivity:** `JpaRepository` reduces repetitive CRUD code.
+- **Object-relational mapping:** Hibernate maps Java objects to PostgreSQL tables.
+- **Maintainability and portability:** JPA reduces coupling to a specific database engine.
+- **Automatic schema management:** Hibernate can synchronize entities and tables through `ddl-auto`.
 
-- **Abstraction and productivity:** `JpaRepository` eliminates repetitive CRUD query code and accelerates development.
-- **Object-relational mapping:** Hibernate maps Java objects to PostgreSQL tables and handles database data types and relationships.
-- **Maintainability and portability:** JPA helps decouple the application from a specific database engine, facilitating future changes and testing.
-- **Automatic schema management:** JPA and Hibernate can synchronize the table structure with the entities through the `ddl-auto` configuration.
-
-> For production environments, explicit database migrations with Flyway or Liquibase are generally safer than relying exclusively on automatic schema generation.
+> For production environments, Flyway or Liquibase is recommended instead of relying exclusively on automatic schema generation.
 
 ### Docker
 
-Docker was selected to make the application and its database environment more portable.
+Docker was selected to provide consistent, portable and reproducible development environments with service isolation.
 
-Benefits include:
+### HTTPS security
 
-- Consistent development environments.
-- Simplified database setup.
-- Easier onboarding for new developers.
-- Isolation between services.
-- Reproducible local execution.
+HTTPS was implemented to encrypt communication between clients and the API and protect data while it is transmitted.
 
-### Testing framework: JUnit 5
+### JUnit 5
 
-JUnit 5 was selected because it is widely adopted in Java projects and integrates natively with the Spring Boot ecosystem through:
-
-```text
-spring-boot-starter-test
-```
-
-This reduces the need to configure multiple external testing dependencies manually.
+JUnit 5 was selected because it is widely used in Java projects and integrates with Spring Boot through `spring-boot-starter-test`.
 
 ### Mockito and MockMvc
 
-- **Mockito:** Used to isolate components by mocking dependencies.
-- **MockMvc:** Used to test Spring MVC controllers without requiring a full external web server.
+- **Mockito** isolates components by mocking their dependencies.
+- **MockMvc** tests Spring MVC controllers without requiring an external web server.
 
 ### PostgreSQL
 
-PostgreSQL was selected as the relational database management system because it provides:
-
-- Strong data consistency.
-- Mature SQL support.
-- Reliable transaction management.
-- Good compatibility with Spring Data JPA.
-- Excellent Docker support.
+PostgreSQL was selected because it provides strong data consistency, reliable transaction management, mature SQL support, Spring Data JPA compatibility and Docker integration.
 
 ### PokéAPI
 
 PokéAPI was selected as the external data source for enriching user profiles with Pokémon information.
 
-The integration is performed dynamically through an external client or service.
-
 ### Maven
 
-Maven was selected for:
-
-- Dependency management.
-- Build automation.
-- Test execution.
-- Packaging.
-- Integration with the Spring Boot ecosystem.
+Maven was selected for dependency management, build automation, test execution, packaging and Spring Boot integration.
 
 ---
-
-## Known Considerations
-
-- The API requires PostgreSQL to be available when persistence operations are executed.
-- Pokémon enrichment depends on the availability of PokéAPI.
-- The exact database schema depends on the JPA entity mappings and configuration.
-- The repository URL and Docker container names must be updated before using the commands literally.
-- The request field must remain consistent between the DTO, controller, tests and this README. The examples in this document use `email`.
-- Port `8080` must be available for the backend.
-- Port `5432` must be available for PostgreSQL.
