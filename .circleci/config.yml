@@ -45,9 +45,10 @@ jobs:
       - store_test_results:
           path: target/surefire-reports
 
-      # Reporte de cobertura para Coveralls usando el Orb
+      # Reporte de cobertura para Coveralls pasando el token explícitamente
       - coveralls/upload:
           coverage_file: target/site/jacoco/jacoco.xml
+          token: $COVERALLS_REPO_TOKEN
 
 workflows:
   pipeline-integracion-continua:
