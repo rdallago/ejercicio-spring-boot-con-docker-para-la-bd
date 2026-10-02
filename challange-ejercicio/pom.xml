@@ -1,35 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
+    
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.3.4</version>
         <relativePath/>
     </parent>
-
+    
     <groupId>com.ejercicio</groupId>
     <artifactId>challange-ejercicio</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>challange-ejercicio</name>
     <description>Proyecto Challenge con Spring Boot y Swagger</description>
-
+    
     <properties>
         <java.version>17</java.version>
         <start-class>com.ejercicio.challange.ejercicio.ChallangeEjercicio</start-class>
     </properties>
 
     <dependencies>
-        <!-- Documentación OpenAPI / Swagger UI -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.6.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
         <!-- Web (Endpoints REST) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -48,14 +52,7 @@
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
-
-        <!-- Driver de MySQL -->
-        <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
+        
         <!-- Base de datos H2 para Pruebas -->
         <dependency>
             <groupId>com.h2database</groupId>
@@ -63,54 +60,64 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Spring Boot Starter Test -->
+        <!-- Driver de MySQL -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
-
+    
     <build>
         <plugins>
-            <!-- Spring Boot Maven Plugin -->
+            <!-- Plugin del compilador -->
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <release>17</release>
+                </configuration>
             </plugin>
 
-            <!-- Maven Surefire Plugin (Para pasar el agente de JaCoCo correctamente) -->
+            <!-- Surefire Plugin: Pasa la variable @{argLine} generada por JaCoCo a los tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
                 <configuration>
                     <argLine>@{argLine}</argLine>
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            
             <!-- Cobertura de código con JaCoCo -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.12</version>
-                <configuration>
-                    <excludes>
-                        <!-- Clase principal de Spring Boot -->
-                        <exclude>**/ChallangeEjercicioApplication.*</exclude>
-                        <!-- DTOs, Entidades JPA, Modelos, Mappers y Conversores -->
-                        <exclude>**/dto/**</exclude>
-                        <exclude>**/entity/**</exclude>
-                        <exclude>**/domain/model/**</exclude>
-                        <exclude>**/mapper/**</exclude>
-                        <exclude>**/converter/**</exclude>
-                    </excludes>
-                </configuration>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                        <configuration>
+                            <!-- Inyecta los argumentos del agente en la propiedad argLine de Surefire -->
+                            <propertyName>argLine</propertyName>
+                            <!-- Excluye clases internas de Java, ByteBuddy, Mockito y herramientas del JDK -->
+                            <excludes>
+                                <exclude>com/sun/**</exclude>
+                                <exclude>java/**</exclude>
+                                <exclude>javax/**</exclude>
+                                <exclude>net/bytebuddy/**</exclude>
+                                <exclude>org/mockito/**</exclude>
+                            </excludes>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>report</id>
@@ -121,24 +128,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- Plugin de Coveralls -->
-            <plugin>
-                <groupId>org.eluder.coveralls</groupId>
-                <artifactId>coveralls-maven-plugin</artifactId>
-                <version>4.3.0</version>
-                <configuration>
-                    <repoToken>${env.COVERALLS_REPO_TOKEN}</repoToken>
-                    <failOnServiceError>false</failOnServiceError>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>javax.xml.bind</groupId>
-                        <artifactId>jaxb-api</artifactId>
-                        <version>2.3.1</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-        </plugins>
+        </plugins>  
     </build>
 </project>
