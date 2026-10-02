@@ -47,7 +47,7 @@ jobs:
 
       # Reporte de cobertura para Coveralls usando el Orb
       - coveralls/upload:
-          path_to_lcov: target/site/jacoco/jacoco.xml
+          path_to_xml: target/site/jacoco/jacoco.xml
 
 workflows:
   pipeline-integracion-continua:
