@@ -141,6 +141,16 @@
                     <jacocoReports>
                         <jacocoReport>${project.build.directory}/site/jacoco/jacoco.xml</jacocoReport>
                     </jacocoReports>
+                    <scanForSources>true</scanForSources>
+                    <!-- Exclusiones directas aplicadas a Coveralls al escanear el código fuente -->
+                    <sourceLoaderOptions>
+                        <excludes>
+                            <exclude>**/dto/**</exclude>
+                            <exclude>**/entity/**</exclude>
+                            <exclude>**/config/**</exclude>
+                            <exclude>**/*Application.*</exclude>
+                        </excludes>
+                    </sourceLoaderOptions>
                 </configuration>
             </plugin>
         </plugins>  
