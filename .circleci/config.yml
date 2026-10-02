@@ -1,1 +1,49 @@
-www
+version: 2.1
+
+executors:
+  java-executor:
+    docker:
+      - image: cimg/openjdk:17.0
+    working_directory: ~/project/challange-ejercicio
+
+jobs:
+  build-and-test:
+    executor: java-executor
+    steps:
+      - checkout
+
+      # Restaura dependencias almacenadas en caché para acelerar el build
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "challange-ejercicio/pom.xml" }}
+            - v1-dependencies-
+
+      # Otorga permisos de ejecución al Maven Wrapper y descarga dependencias
+      - run:
+          name: Preparar entorno y dependencias
+          command: |
+            cd challange-ejercicio
+            chmod +x mvnw
+            ./mvnw dependency:go-offline
+
+      # Guarda las dependencias en caché
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "challange-ejercicio/pom.xml" }}
+
+      # Ejecuta las pruebas unitarias e integración de JUnit
+      - run:
+          name: Ejecutar Pruebas Automatizadas
+          command: |
+            cd challange-ejercicio
+            ./mvnw clean test
+
+      # Almacena los resultados de los tests para verlos en la interfaz de CircleCI
+      - store_test_results:
+          path: challange-ejercicio/target/surefire-reports
+
+workflows:
+  pipeline-integracion-continua:
+    jobs:
+      - build-and-test
