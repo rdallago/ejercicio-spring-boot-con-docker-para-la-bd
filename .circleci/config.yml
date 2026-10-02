@@ -1,6 +1,5 @@
 version: 2.1
 
-
 orbs:
   coveralls: coveralls/coveralls@2.2.5
   
@@ -36,12 +35,12 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "challange-ejercicio/pom.xml" }}
 
-      # Ejecuta las pruebas unitarias e integración de JUnit
+      # Ejecuta las pruebas unitarias, genera el reporte JaCoCo y lo sube a Coveralls
       - run:
-          name: Ejecutar Pruebas Automatizadas
+          name: Ejecutar Pruebas y Enviar Cobertura a Coveralls
           command: |
             cd challange-ejercicio
-            ./mvnw clean test
+            ./mvnw clean test jacoco:report coveralls:report
 
       # Almacena los resultados de los tests para verlos en la interfaz de CircleCI
       - store_test_results:
