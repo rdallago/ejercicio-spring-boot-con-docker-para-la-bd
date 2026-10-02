@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  coveralls: coveralls/coveralls@2.2.5
-  
 executors:
   java-executor:
     docker:
@@ -35,20 +32,15 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
-      # Ejecuta las pruebas y genera el informe de cobertura de JaCoCo
+      # Ejecuta las pruebas, genera el reporte JaCoCo y sube directamente a Coveralls vía Maven
       - run:
-          name: Ejecutar Pruebas Automatizadas y Reporte JaCoCo
+          name: Ejecutar Pruebas Automatizadas y Subir a Coveralls
           command: |
-            ./mvnw clean test jacoco:report
+            ./mvnw clean test jacoco:report org.eluder.coveralls:coveralls-maven-plugin:4.3.0:report -DrepoToken=$COVERALLS_REPO_TOKEN
 
       # Almacena los resultados de los tests para verlos en la interfaz de CircleCI
       - store_test_results:
           path: target/surefire-reports
-
-      # Reporte de cobertura para Coveralls pasando la variable de entorno
-      - coveralls/upload:
-          coverage_file: target/site/jacoco/jacoco.xml
-          token: COVERALLS_REPO_TOKEN
 
 workflows:
   pipeline-integracion-continua:
