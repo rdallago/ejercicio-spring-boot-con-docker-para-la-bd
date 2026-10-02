@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ejercicio.challange.ejercicio.config.Generated;
+
+@Generated
 public class UserDto {
    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)

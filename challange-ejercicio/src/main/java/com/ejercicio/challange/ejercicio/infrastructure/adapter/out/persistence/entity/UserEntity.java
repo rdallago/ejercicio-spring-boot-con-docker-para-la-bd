@@ -4,9 +4,10 @@ import jakarta.persistence.*;
 import com.ejercicio.challange.ejercicio.infrastructure.adapter.out.persistence.converter.IntegerListConverter;
 import java.util.ArrayList;
 import java.util.List;
-
+import com.ejercicio.challange.ejercicio.config.Generated;
 @Entity
 @Table(name = "usuario")
+@Generated
 public class UserEntity {
 
     @Id
