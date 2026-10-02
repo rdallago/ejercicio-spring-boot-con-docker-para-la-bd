@@ -90,20 +90,19 @@
                 </configuration>
             </plugin>
 
-            <!-- Plugin de Spring Boot -->
+            <!-- Plugin oficial de Spring Boot para empaquetado Maven -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-parent</artifactId>
-                <version>3.3.4</version>
+                <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-
+            
             <!-- Configuración correcta de JaCoCo -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.12</version>
                 <executions>
-                    <!-- 1. Prepara el agente de runtime SIN exclusiones de código interno -->
+                    <!-- 1. Prepara el agente de runtime sin exclusiones para que instrumente los tests -->
                     <execution>
                         <id>prepare-agent</id>
                         <goals>
@@ -114,7 +113,7 @@
                         </configuration>
                     </execution>
                     
-                    <!-- 2. Genera el reporte XML para Coveralls -->
+                    <!-- 2. Genera el reporte XML para Coveralls filtrando paquetes sin lógica -->
                     <execution>
                         <id>report</id>
                         <phase>test</phase>
@@ -123,7 +122,6 @@
                         </goals>
                         <configuration>
                             <excludes>
-                                <!-- Exclusiones SOLO para el reporte visual/XML, NO para el agente -->
                                 <exclude>**/dto/**</exclude>
                                 <exclude>**/entity/**</exclude>
                                 <exclude>**/config/**</exclude>
@@ -134,7 +132,7 @@
                 </executions>
             </plugin>
             
-            <!-- Plugin de Coveralls para CircleCI -->
+            <!-- Plugin de Coveralls para enviar cobertura desde CircleCI -->
             <plugin>
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
