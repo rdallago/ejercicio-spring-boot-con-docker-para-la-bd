@@ -1,37 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
+<project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.3.4</version>
         <relativePath/>
     </parent>
+
     <groupId>com.ejercicio</groupId>
     <artifactId>challange-ejercicio</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>challange-ejercicio</name>
     <description>Proyecto Challenge con Spring Boot y Swagger</description>
-    
+
     <properties>
         <java.version>17</java.version>
         <start-class>com.ejercicio.challange.ejercicio.ChallangeEjercicio</start-class>
     </properties>
 
     <dependencies>
+        <!-- Documentación OpenAPI / Swagger UI -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.6.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        
+
         <!-- Web (Endpoints REST) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -50,13 +48,6 @@
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
-        
-        <!-- Base de datos H2 para Pruebas -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>test</scope>
-        </dependency>
 
         <!-- Driver de MySQL -->
         <dependency>
@@ -64,20 +55,56 @@
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
+
+        <!-- Base de datos H2 para Pruebas -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Spring Boot Starter Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-    
+
     <build>
         <plugins>
+            <!-- Spring Boot Maven Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            
+
+            <!-- Maven Surefire Plugin (Para pasar el agente de JaCoCo correctamente) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>@{argLine}</argLine>
+                </configuration>
+            </plugin>
+
             <!-- Cobertura de código con JaCoCo -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.11</version>
+                <version>0.8.12</version>
+                <configuration>
+                    <excludes>
+                        <!-- Clase principal de Spring Boot -->
+                        <exclude>**/ChallangeEjercicioApplication.*</exclude>
+                        <!-- DTOs, Entidades JPA, Modelos, Mappers y Conversores -->
+                        <exclude>**/dto/**</exclude>
+                        <exclude>**/entity/**</exclude>
+                        <exclude>**/domain/model/**</exclude>
+                        <exclude>**/mapper/**</exclude>
+                        <exclude>**/converter/**</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -95,7 +122,7 @@
                 </executions>
             </plugin>
 
-            <!-- Plugin de Coveralls con JAXB y fallo tolerante -->
+            <!-- Plugin de Coveralls -->
             <plugin>
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
@@ -112,6 +139,6 @@
                     </dependency>
                 </dependencies>
             </plugin>
-        </plugins>  
+        </plugins>
     </build>
 </project>
