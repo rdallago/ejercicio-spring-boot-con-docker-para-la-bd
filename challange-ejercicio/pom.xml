@@ -100,6 +100,24 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.12</version>
+                <configuration>
+                    <!-- Exclusiones globales tanto para el agente como para el reporte XML de Coveralls -->
+                    <excludes>
+                        <!-- Clases internas del JDK, ByteBuddy y Mockito -->
+                        <exclude>com/sun/**</exclude>
+                        <exclude>java/**</exclude>
+                        <exclude>javax/**</exclude>
+                        <exclude>net/bytebuddy/**</exclude>
+                        <exclude>org/mockito/**</exclude>
+                        
+                        <!-- DTOs, Entidades y Clases de Configuración/Boilerplate -->
+                        <exclude>**/dto/**</exclude>
+                        <exclude>**/entity/**</exclude>
+                        <exclude>**/model/**</exclude>
+                        <exclude>**/config/**</exclude>
+                        <exclude>**/*Application.*</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -109,14 +127,6 @@
                         <configuration>
                             <!-- Inyecta los argumentos del agente en la propiedad argLine de Surefire -->
                             <propertyName>argLine</propertyName>
-                            <!-- Excluye clases internas de Java, ByteBuddy, Mockito y herramientas del JDK -->
-                            <excludes>
-                                <exclude>com/sun/**</exclude>
-                                <exclude>java/**</exclude>
-                                <exclude>javax/**</exclude>
-                                <exclude>net/bytebuddy/**</exclude>
-                                <exclude>org/mockito/**</exclude>
-                            </excludes>
                         </configuration>
                     </execution>
                     <execution>
