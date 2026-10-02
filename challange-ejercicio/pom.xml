@@ -70,7 +70,7 @@
     
     <build>
         <plugins>
-            <!-- Plugin del compilador -->
+            <!-- Plugin del compilador Java 17 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -80,7 +80,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Surefire Plugin: Pasa la variable @{argLine} generada por JaCoCo a los tests -->
+            <!-- Surefire Plugin: Ejecuta los tests e inyecta argLine de JaCoCo -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -90,53 +90,60 @@
                 </configuration>
             </plugin>
 
+            <!-- Plugin de Spring Boot -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <artifactId>spring-boot-starter-parent</artifactId>
+                <version>3.3.4</version>
             </plugin>
-            
-            <!-- Cobertura de código con JaCoCo -->
+
+            <!-- Configuración correcta de JaCoCo -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.12</version>
-                <configuration>
-                    <!-- Exclusiones globales tanto para el agente como para el reporte XML de Coveralls -->
-                    <excludes>
-                        <!-- Clases internas del JDK, ByteBuddy y Mockito -->
-                        <exclude>com/sun/**</exclude>
-                        <exclude>java/**</exclude>
-                        <exclude>javax/**</exclude>
-                        <exclude>net/bytebuddy/**</exclude>
-                        <exclude>org/mockito/**</exclude>
-                        
-                        <!-- DTOs, Entidades y Clases de Configuración/Boilerplate -->
-                        <exclude>**/dto/**</exclude>
-                        <exclude>**/entity/**</exclude>
-                        <exclude>**/model/**</exclude>
-                        <exclude>**/config/**</exclude>
-                        <exclude>**/*Application.*</exclude>
-                    </excludes>
-                </configuration>
                 <executions>
+                    <!-- 1. Prepara el agente de runtime SIN exclusiones de código interno -->
                     <execution>
                         <id>prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                         <configuration>
-                            <!-- Inyecta los argumentos del agente en la propiedad argLine de Surefire -->
                             <propertyName>argLine</propertyName>
                         </configuration>
                     </execution>
+                    
+                    <!-- 2. Genera el reporte XML para Coveralls -->
                     <execution>
                         <id>report</id>
                         <phase>test</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
+                        <configuration>
+                            <excludes>
+                                <!-- Exclusiones SOLO para el reporte visual/XML, NO para el agente -->
+                                <exclude>**/dto/**</exclude>
+                                <exclude>**/entity/**</exclude>
+                                <exclude>**/config/**</exclude>
+                                <exclude>**/*Application.*</exclude>
+                            </excludes>
+                        </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            
+            <!-- Plugin de Coveralls para CircleCI -->
+            <plugin>
+                <groupId>org.eluder.coveralls</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+                <version>4.3.0</version>
+                <configuration>
+                    <jacocoReports>
+                        <jacocoReport>${project.build.directory}/site/jacoco/jacoco.xml</jacocoReport>
+                    </jacocoReports>
+                </configuration>
             </plugin>
         </plugins>  
     </build>
