@@ -32,11 +32,11 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
-      # Ejecuta tests, genera el reporte JaCoCo y lo sube a Coveralls vía Maven
+      # Ejecuta tests, genera reporte JaCoCo y envía a Coveralls
       - run:
           name: Ejecutar Pruebas Automatizadas y Subir a Coveralls
           command: |
-            ./mvnw clean test jacoco:report coveralls:report -DrepoToken=$COVERALLS_REPO_TOKEN
+            ./mvnw clean test jacoco:report coveralls:report
 
       # Almacena los resultados de los tests
       - store_test_results:

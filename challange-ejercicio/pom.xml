@@ -95,11 +95,15 @@
                 </executions>
             </plugin>
 
-            <!-- Plugin de Coveralls con JAXB habilitado para Java 17 -->
+            <!-- Plugin de Coveralls con JAXB y fallo tolerante -->
             <plugin>
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>4.3.0</version>
+                <configuration>
+                    <repoToken>${env.COVERALLS_REPO_TOKEN}</repoToken>
+                    <failOnServiceError>false</failOnServiceError>
+                </configuration>
                 <dependencies>
                     <dependency>
                         <groupId>javax.xml.bind</groupId>
