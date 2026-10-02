@@ -14,6 +14,7 @@ public class TestDatabaseCleaner {
 
     public void clean() {
         // Limpia la tabla 'usuario' en challange_db_test y reinicia el ID autoincremental
-        jdbcTemplate.execute("TRUNCATE TABLE usuario RESTART IDENTITY CASCADE;");
+        jdbcTemplate.execute("DELETE FROM usuario;");
+        jdbcTemplate.execute("ALTER TABLE usuario ALTER COLUMN id RESTART WITH 1;");
     }
 }
