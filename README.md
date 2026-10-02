@@ -52,7 +52,7 @@ The system manages user data and integrates with the public [PokéAPI](https://p
   - `challenge_db`
   - `challenge_db_test`
 - **Clean Architecture:** Organizes the application into independent layers with clearly defined responsibilities.
-- **RESTful API:** Exposes HTTP endpoints to create and retrieve users.
+- **RESTful API:** Exposes HTTPS endpoints to create and retrieve users.
 - **Integration Test Suite:** Includes controller tests with database cleanup and external REST-call isolation using mocks.
 - **Swagger Documentation:** Provides interactive API documentation through SpringDoc OpenAPI.
 - **Docker Support:** Allows the application and database to run in containerized environments.
@@ -130,7 +130,7 @@ Content-Type: application/json
 ### Example using cURL
 
 ```bash
-curl -X POST "http://localhost:8080/api/usuarios" \
+curl -X POST "https://localhost:8080/api/usuarios" \
   -H "Content-Type: application/json" \
   -d '{
     "nombre": "Ricardo",
@@ -148,7 +148,7 @@ The following endpoints are available in the application.
 
 ### Create a user
 
-```http
+```https
 POST /api/usuarios
 ```
 
@@ -168,7 +168,7 @@ Creates a new user.
 #### Example cURL request
 
 ```bash
-curl -X POST "http://localhost:8080/api/usuarios" \
+curl -X POST "https://localhost:8080/api/usuarios" \
   -H "Content-Type: application/json" \
   -d '{
     "nombre": "Ricardo",
@@ -182,7 +182,7 @@ curl -X POST "http://localhost:8080/api/usuarios" \
 
 ### Retrieve all users
 
-```http
+```https
 GET /api/usuarios
 ```
 
@@ -191,7 +191,7 @@ Returns all users stored in the database.
 #### Example cURL request
 
 ```bash
-curl "http://localhost:8080/api/usuarios"
+curl "https://localhost:8080/api/usuarios"
 ```
 
 ---
@@ -207,7 +207,7 @@ Returns a specific user by ID, including enriched Pokémon information when avai
 #### Example cURL request
 
 ```bash
-curl "http://localhost:8080/api/usuarios/1"
+curl "https://localhost:8080/api/usuarios/1"
 ```
 
 ---
@@ -216,11 +216,11 @@ curl "http://localhost:8080/api/usuarios/1"
 
 When the application is running locally, Swagger UI is available at:
 
-[Open Swagger UI](http://localhost:8080/swagger-ui/index.html)
+[Open Swagger UI](https://localhost:8080/swagger-ui/index.html)
 
 OpenAPI specification:
 
-[OpenAPI JSON](http://localhost:8080/v3/api-docs)
+[OpenAPI JSON](https://localhost:8080/v3/api-docs)
 
 > These links work when the application is running on `localhost` and port `8080`.
 
@@ -352,12 +352,12 @@ docker ps
 
 Once the application is running, open:
 
-[Swagger UI](http://localhost:8080/swagger-ui/index.html)
+[Swagger UI](https://localhost:8080/swagger-ui/index.html)
 
 Or test the API directly:
 
 ```bash
-curl "http://localhost:8080/api/usuarios"
+curl "https://localhost:8080/api/usuarios"
 ```
 
 ### 7. Stop the services
@@ -386,14 +386,14 @@ docker compose down -v
 
 If the database starts empty, users can be created by sending a `POST` request to:
 
-```http
+```https
 POST /api/usuarios
 ```
 
 ### Example seed request
 
 ```bash
-curl -X POST "http://localhost:8080/api/usuarios" \
+curl -X POST "https://localhost:8080/api/usuarios" \
   -H "Content-Type: application/json" \
   -d '{
     "nombre": "Ricardo",
@@ -406,7 +406,7 @@ curl -X POST "http://localhost:8080/api/usuarios" \
 ### Seeding through Swagger
 
 1. Start the application.
-2. Open [Swagger UI](http://localhost:8080/swagger-ui/index.html).
+2. Open [Swagger UI](https://localhost:8080/swagger-ui/index.html).
 3. Locate `POST /api/usuarios`.
 4. Select **Try it out**.
 5. Enter the JSON request body.
