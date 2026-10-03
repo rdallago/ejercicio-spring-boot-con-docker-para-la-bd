@@ -47,8 +47,7 @@ The system manages user data and integrates with the public [PokéAPI](https://p
 
 ### Coverall
 
-[![Coverage Status](https://img.shields.io/coveralls/github/rdallago/challange-ejercicio/main?maxAge=0)](https://coveralls.io/github/rdallago/challange-ejercicio?branch=main)
-
+[![Coverage Status](https://coveralls.io/repos/github/rdallago/ejercicio-spring-boot-con-docker-para-la-bd/badge.svg?branch=main)](https://coveralls.io/github/rdallago/ejercicio-spring-boot-con-docker-para-la-bd?branch=main)
 
 ### Features
 
