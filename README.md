@@ -48,8 +48,6 @@ The system manages user data and integrates with the public [PokéAPI](https://p
 ### Coverall
 [![Coverage Status](https://coveralls.io/repos/github/rdallago/ejercicio-spring-boot-con-docker-para-la-bd/badge.svg?branch=main)](https://coveralls.io/github/rdallago/ejercicio-spring-boot-con-docker-para-la-bd?branch=main)
 
-[![Coverage Status](https://img.shields.io/coveralls/github/rdallago/challange-ejercicio/main)](https://coveralls.io/github/TU_USUARIO/challange-ejercicio?branch=main)
-
 ### Features
 
 - **User Registration:** Registers new users while ensuring email uniqueness and associating a list of Pokémon IDs.
