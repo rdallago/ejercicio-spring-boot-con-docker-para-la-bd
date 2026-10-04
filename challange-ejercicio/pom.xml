@@ -3,73 +3,90 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.3.4</version>
         <relativePath/>
     </parent>
-    
+
     <groupId>com.ejercicio</groupId>
     <artifactId>challange-ejercicio</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>challange-ejercicio</name>
     <description>Proyecto Challenge con Spring Boot y Swagger</description>
-    
+
     <properties>
         <java.version>17</java.version>
         <start-class>com.ejercicio.challange.ejercicio.ChallangeEjercicio</start-class>
     </properties>
 
     <dependencies>
+        <!-- OpenAPI / Swagger -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.6.0</version>
+        </dependency>
+
+        <!-- Spring Boot Starters -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        
-        <!-- Web (Endpoints REST) -->
+
+        <!-- Flyway Migration -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
         </dependency>
 
-        <!-- Spring Data JPA (Persistencia) -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-
-        <!-- Driver de PostgreSQL -->
+        <!-- Base de Datos (Drivers) -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
-        
-        <!-- Base de datos H2 para Pruebas -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Driver de MySQL -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-    
+
     <build>
         <plugins>
+            <!-- Plugin oficial de Spring Boot -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <!-- Plugin de Flyway -->
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+            </plugin>
+
             <!-- Plugin del compilador Java 17 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -80,7 +97,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Surefire Plugin -->
+            <!-- Surefire Plugin para Tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -90,12 +107,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Plugin oficial de Spring Boot -->
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            
             <!-- JaCoCo Plugin -->
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -128,8 +139,8 @@
                     </execution>
                 </executions>
             </plugin>
-            
-            <!-- Coveralls Plugin con soporte JAXB para Java 17 -->
+
+            <!-- Coveralls Plugin -->
             <plugin>
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
@@ -154,6 +165,6 @@
                     </jacocoReports>
                 </configuration>
             </plugin>
-        </plugins>  
+        </plugins>
     </build>
 </project>
