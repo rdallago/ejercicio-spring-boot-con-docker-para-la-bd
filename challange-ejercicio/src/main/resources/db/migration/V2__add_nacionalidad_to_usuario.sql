@@ -1,0 +1,2 @@
+ALTER TABLE usuario 
+ADD COLUMN nacionalidad VARCHAR(255) DEFAULT NULL;
