@@ -580,7 +580,6 @@ Configure environment-specific values outside the source code:
 For production environments, prefer a migration tool such as:
 
 - Flyway.
-- Liquibase.
 
 Avoid depending exclusively on automatic schema generation for production databases.
 
